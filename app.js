@@ -1,5 +1,4 @@
-// app.js (終極咬合無Bug版)
-// 1. 🟢 修正為你最新截圖上的正確 LiveKit 基地台網址
+// app.js (終極咬合無 Bug 完全體)
 const LIVEKIT_SERVER_URL = "wss://whisper-tour-enlho56l.livekit.cloud";
 const VERCEL_BACKEND_URL = "https://whisper-tour-drab.vercel.app/api/token";
 
@@ -8,6 +7,7 @@ let currentRoomCode = "";
 let countInterval = null;
 let waveInterval = null;
 
+// 畫面切換控制
 function switchScreen(screenNum) {
     document.getElementById('screen-1').className = "hidden";
     document.getElementById('screen-2').className = "hidden";
@@ -22,6 +22,7 @@ function switchScreen(screenNum) {
     if (screenNum === 'tourist-live') document.getElementById('screen-tourist-live').className = "block space-y-8 text-center";
 }
 
+// 導遊端：房號初始化生成
 function toScreen3() {
     switchScreen(3);
     const chkRandom = document.getElementById('chkRandomCode').checked;
@@ -29,6 +30,7 @@ function toScreen3() {
     document.getElementById('displayRoomCode').innerText = currentRoomCode;
 }
 
+// 📢 導遊端：獲取 Token 並連線至基地台
 async function connectAsGuide() {
     try {
         document.getElementById('txStatusText').innerText = "FETCHING TOKEN...";
@@ -38,7 +40,6 @@ async function connectAsGuide() {
 
         document.getElementById('txStatusText').innerText = "CONNECTING...";
         
-        // 🟢 【保險關鍵】如果瀏覽器不認 window，改用最安全的全局域抓取通訊模組
         const LK = window.LiveKitClient || LiveKitClient;
         if (!LK) throw new Error("晶片模組加載失敗，請刷新重試！");
 
@@ -60,6 +61,7 @@ async function connectAsGuide() {
     }
 }
 
+// 導遊按住麥克風發話
 async function startTransmission(e) {
     if(e) e.preventDefault();
     if (!currentRoom) return;
@@ -74,6 +76,7 @@ async function startTransmission(e) {
     await currentRoom.localParticipant.setMicrophoneEnabled(true);
 }
 
+// 導遊放開麥克風靜音
 async function stopTransmission(e) {
     if(e) e.preventDefault();
     if (!currentRoom) return;
@@ -88,6 +91,7 @@ async function stopTransmission(e) {
     await currentRoom.localParticipant.setMicrophoneEnabled(false);
 }
 
+// 🎧 遊客端：登入並守聽頻道
 async function enterTouristChannel() {
     let code = document.getElementById('inputRoomCode').value.trim();
     let nick = document.getElementById('inputNickname').value.trim();
@@ -126,11 +130,13 @@ async function enterTouristChannel() {
 
         await currentRoom.connect(LIVEKIT_SERVER_URL, data.token);
         document.getElementById('rxStatus').innerText = "頻道安靜中 (STANDBY)";
+    } catch (err) {
         alert("遊客連線失敗: " + err.message);
         switchScreen(2);
     }
 }
 
+// 監聽在線聽眾人數
 function startListenerCountLoop() {
     countInterval = setInterval(() => {
         if (currentRoom) {
@@ -140,6 +146,7 @@ function startListenerCountLoop() {
     }, 2000);
 }
 
+// 聲波跳動視覺效果
 function toggleWaveAnimation(run) {
     const spans = document.querySelectorAll('#liveWave span');
     clearInterval(waveInterval);
@@ -148,10 +155,12 @@ function toggleWaveAnimation(run) {
             spans.forEach(s => { s.style.height = `${Math.floor(Math.random() * 32) + 8}px`; });
         }, 100);
     } else {
+        sps => { s.style.height = `6px`; };
         spans.forEach(s => { s.style.height = `6px`; });
     }
 }
 
+// 斷開連線離開房間
 function leaveRoom() {
     if (currentRoom) { currentRoom.disconnect(); currentRoom = null; }
     clearInterval(countInterval);
