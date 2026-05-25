@@ -126,7 +126,6 @@ async function enterTouristChannel() {
 
         await currentRoom.connect(LIVEKIT_SERVER_URL, data.token);
         document.getElementById('rxStatus').innerText = "頻道安靜中 (STANDBY)";
-    } catch (err) {
         alert("遊客連線失敗: " + err.message);
         switchScreen(2);
     }
