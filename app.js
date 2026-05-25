@@ -1,6 +1,6 @@
 // app.js (全自動連線商業版 - 生產環境無誤版)
 // 1. 填入你們專案的 LiveKit 官方基地台網址
-const LIVEKIT_SERVER_URL = "wss://whisper-tour-p-2sa9vdmag8m.livekit.cloud";
+const LIVEKIT_SERVER_URL = "wss://whisper-tour-enlho56l.livekit.cloud";
 
 // 2. 🟢 【核心修正】已經幫你完美換成剛剛抓到的乾淨 Production 網址！
 const VERCEL_BACKEND_URL = "https://whisper-tour-drab.vercel.app/api/token";
