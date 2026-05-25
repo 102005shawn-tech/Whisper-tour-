@@ -3,8 +3,7 @@
 const LIVEKIT_SERVER_URL = "wss://whisper-tour-p-2sa9vdmag8m.livekit.cloud";
 
 // 2. 🔥 這裡換成你在 Vercel 部署成功後拿到的那串專屬後端網址！
-const VERCEL_BACKEND_URL = "https://whisper-tour-4rxh3f428-102005shawn-techs-projects.vercel.app/api/token";
-
+const VERCEL_BACKEND_URL = "https://whisper-tour-drab.vercel.app/api/token";
 let currentRoom = null;
 let currentRoomCode = "";
 let countInterval = null;
