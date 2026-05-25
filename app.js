@@ -1,3 +1,4 @@
+import * as LiveKitClient from 'https://cdn.jsdelivr.net/npm/livekit-client@2.19.0/+esm';
 // app.js (終極咬合無 Bug 完全體)
 const LIVEKIT_SERVER_URL = "wss://whisper-tour-enlho56l.livekit.cloud";
 const VERCEL_BACKEND_URL = "https://whisper-tour-drab.vercel.app/api/token";
@@ -40,7 +41,7 @@ async function connectAsGuide() {
 
         document.getElementById('txStatusText').innerText = "CONNECTING...";
         
-        const LK = window.LiveKitClient || LiveKitClient;
+        const LK = LiveKitClient;
         if (!LK) throw new Error("晶片模組加載失敗，請刷新重試！");
 
         currentRoom = new LK.Room();
@@ -110,7 +111,7 @@ async function enterTouristChannel() {
         if (data.error) throw new Error(data.error);
 
         document.getElementById('rxStatus').innerText = "正在接入對講頻道...";
-        const LK = window.LiveKitClient || LiveKitClient;
+        const LK =  LiveKitClient;
         currentRoom = new LK.Room();
         
         currentRoom.on(LK.RoomEvent.TrackSubscribed, (track) => {
