@@ -1,9 +1,10 @@
-// app.js (全自動連線商業版)
+// app.js (全自動連線商業版 - 生產環境無誤版)
 // 1. 填入你們專案的 LiveKit 官方基地台網址
 const LIVEKIT_SERVER_URL = "wss://whisper-tour-p-2sa9vdmag8m.livekit.cloud";
 
-// 2. 🔥 這裡換成你在 Vercel 部署成功後拿到的那串專屬後端網址！
+// 2. 🟢 【核心修正】已經幫你完美換成剛剛抓到的乾淨 Production 網址！
 const VERCEL_BACKEND_URL = "https://whisper-tour-drab.vercel.app/api/token";
+
 let currentRoom = null;
 let currentRoomCode = "";
 let countInterval = null;
@@ -35,9 +36,6 @@ function toScreen3() {
 // 📢 導遊發話端自動獲取 Token 並登入基地台
 async function connectAsGuide() {
     try {
-        if (VERCEL_BACKEND_URL.includes("你的專案名稱")) {
-            return alert("錯誤：翔哥，你忘記把 app.js 第 6 行改為你們專屬的 Vercel 後端網址囉！");
-        }
         document.getElementById('txStatusText').innerText = "FETCHING TOKEN...";
         
         // 向 Vercel 秘密中心申請具備發話權限的導遊通行證
@@ -107,13 +105,14 @@ async function stopTransmission(e) {
 
 // 🎧 遊客接收端自動登入與動態接收邏輯
 async function enterTouristChannel() {
-    const code = document.getElementById('inputRoomCode').value.trim();
-    const nick = document.getElementById('inputNickname').value.trim();
+    let code = document.getElementById('inputRoomCode').value.trim();
+    let nick = document.getElementById('inputNickname').value.trim();
 
-    if (!code || !nick) return alert('請完整填寫房號與暱稱！');
-    if (VERCEL_BACKEND_URL.includes("你的專案名稱")) {
-        return alert("錯誤：翔哥，你忘記把 app.js 第 6 行改為你們專屬的 Vercel 後端網址囉！");
+    // 🟢 【細節要求】如果遊客欄位空白，自動補上 Kevin 作為預設名稱
+    if (!nick) {
+        nick = "Kevin";
     }
+    if (!code) return alert('請輸入 4 位數房號！');
 
     document.getElementById('liveRoomInfo').innerText = `CH: ${code}`;
     document.getElementById('liveNickInfo').innerText = `USER: ${nick}`;
