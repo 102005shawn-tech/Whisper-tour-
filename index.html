@@ -5,23 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Whisper Tour - 網頁無線電導覽系統</title>
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-    <script src="livekit-client.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/livekit-client/2.19.0/livekit-client.umd.min.js"></script>
+</head>
 <body class="bg-[#030712] min-h-screen flex flex-col md:flex-row items-center justify-center font-sans antialiased selection:bg-cyan-500/30 overflow-x-hidden relative">
 
     <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div class="absolute -top-[30%] -left-[20%] w-[70%] h-[70%] rounded-full bg-cyan-950/20 blur-[120px]"></div>
         <div class="absolute -bottom-[30%] -right-[20%] w-[70%] h-[70%] rounded-full bg-blue-950/25 blur-[120px]"></div>
-        <svg class="absolute inset-0 w-full h-full opacity-10" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <radialGradient id="grad" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.2"/>
-                    <stop offset="100%" stop-color="#030712" stop-opacity="0"/>
-                </radialGradient>
-            </defs>
-            <path d="M-100,200 L500,800 M800,-100 L300,900 M1200,400 L200,1000" stroke="#0891b2" stroke-width="1" stroke-dasharray="5,5" />
-            <circle cx="20%" cy="30%" r="2" fill="#22d3ee" />
-            <circle cx="80%" cy="70%" r="3" fill="#3b82f6" class="animate-pulse" />
-        </svg>
     </div>
 
     <div class="z-20 w-full md:w-auto max-w-md md:max-w-none md:absolute md:top-12 md:left-12 flex items-center gap-4 px-6 pt-6 md:p-0 select-none">
@@ -31,7 +21,7 @@
             </svg>
         </div>
         <div class="flex flex-col">
-            <span class="text-2xl font-black text-white tracking-wider font-mono bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-cyan-400">Whisper Tour</span>
+            <span class="text-2xl font-black text-white tracking-wider font-mono">Whisper Tour</span>
             <span class="text-[10px] font-bold text-cyan-400/70 uppercase tracking-widest mt-0.5">Audio Guide System</span>
         </div>
     </div>
@@ -40,144 +30,103 @@
         
         <div id="screen-1" class="space-y-8">
             <div class="text-center space-y-2">
-                <h2 class="text-4xl font-black text-white tracking-wider drop-shadow-[0_2px_10px_rgba(34,211,238,0.2)]">開始導覽</h2>
-                <p class="text-slate-400 text-xs uppercase tracking-widest font-semibold">請選擇您的無線電操作身分</p>
+                <h2 class="text-4xl font-black text-white tracking-wider">開始導覽</h2>
+                <p class="text-slate-400 text-xs font-semibold">請選擇您的無線電操作身分</p>
             </div>
-
             <div class="grid grid-cols-1 gap-4">
-                <button onclick="toScreen3()" class="bg-gradient-to-r from-cyan-600 to-cyan-700 hover:from-cyan-500 hover:to-cyan-600 text-white p-6 rounded-2xl shadow-xl transition active:scale-95 flex flex-col items-center justify-center gap-3 cursor-pointer border border-cyan-400/20 shadow-cyan-950/20">
+                <button onclick="toScreen3()" class="bg-gradient-to-r from-cyan-600 to-cyan-700 text-white p-6 rounded-2xl shadow-xl transition active:scale-95 flex flex-col items-center justify-center gap-3 cursor-pointer">
                     <span class="text-4xl">📢</span>
-                    <div class="text-center">
-                        <span class="text-xl font-bold tracking-wide block">我是導遊</span>
-                        <span class="text-xs text-cyan-100/70 block mt-1">開啟房間、掌控麥克風發話</span>
-                    </div>
+                    <span class="text-xl font-bold block">我是導遊</span>
                 </button>
-
-                <button onclick="switchScreen(2)" class="bg-slate-900/60 hover:bg-slate-800/80 text-white p-6 rounded-2xl shadow-xl transition active:scale-95 flex flex-col items-center justify-center gap-3 cursor-pointer border border-slate-800 backdrop-blur-md">
+                <button onclick="switchScreen(2)" class="bg-slate-900/60 text-white p-6 rounded-2xl shadow-xl transition active:scale-95 flex flex-col items-center justify-center gap-3 cursor-pointer border border-slate-800">
                     <span class="text-4xl">🎧</span>
-                    <div class="text-center">
-                        <span class="text-xl font-bold tracking-wide block">我是遊客</span>
-                        <span class="text-xs text-slate-400 block mt-1">輸入房號暱稱、守聽導覽語音</span>
-                    </div>
+                    <span class="text-xl font-bold block">我是遊客</span>
                 </button>
             </div>
         </div>
 
         <div id="screen-2" class="hidden space-y-6">
-            <button onclick="switchScreen(1)" class="text-slate-400 hover:text-slate-200 font-bold text-base p-2 cursor-pointer flex items-center gap-1">← 返回首頁</button>
-            
-            <div class="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl shadow-2xl border border-slate-800/80 space-y-5">
+            <button onclick="switchScreen(1)" class="text-slate-400 font-bold flex items-center gap-1">← 返回首頁</button>
+            <div class="bg-slate-900/60 p-6 rounded-2xl border border-slate-800 space-y-5">
                 <h3 class="text-xl font-bold text-white text-center border-b border-slate-800 pb-3">遊客登入頻道</h3>
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">請輸入房號</label>
-                        <input type="text" id="inputRoomCode" placeholder="請輸入 4 位數房號" maxlength="4" class="w-full px-4 py-3 border border-slate-700 rounded-xl text-center font-mono text-xl tracking-widest bg-slate-950 text-cyan-400 focus:outline-none focus:border-cyan-500">
+                        <label class="block text-xs font-bold text-slate-400 mb-1.5">請輸入房號</label>
+                        <input type="text" id="inputRoomCode" placeholder="請輸入 4 位數房號" maxlength="4" class="w-full px-4 py-3 border border-slate-700 rounded-xl text-center bg-slate-950 text-cyan-400 font-mono text-xl focus:outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">請輸入暱稱</label>
-                        <input type="text" id="inputNickname" placeholder="例如：Kevin" class="w-full px-4 py-3 border border-slate-700 rounded-xl text-center text-base bg-slate-950 text-white focus:outline-none focus:border-cyan-500">
+                        <label class="block text-xs font-bold text-slate-400 mb-1.5">請輸入暱稱</label>
+                        <input type="text" id="inputNickname" placeholder="例如：Kevin" class="w-full px-4 py-3 border border-slate-700 rounded-xl text-center bg-slate-950 text-white focus:outline-none">
                     </div>
                 </div>
-                <button onclick="enterTouristChannel()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-cyan-950 cursor-pointer active:scale-98">確認加入頻道</button>
+                <button onclick="enterTouristChannel()" class="w-full bg-cyan-600 text-white font-bold py-3.5 rounded-xl cursor-pointer">確認加入頻道</button>
             </div>
         </div>
 
         <div id="screen-3" class="hidden space-y-6">
-            <button onclick="switchScreen(1)" class="text-slate-400 hover:text-slate-200 font-bold text-base p-2 cursor-pointer flex items-center gap-1">← 返回首頁</button>
-            
-            <div class="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl shadow-2xl border border-slate-800/80 space-y-6">
+            <button onclick="switchScreen(1)" class="text-slate-400 font-bold flex items-center gap-1">← 返回首頁</button>
+            <div class="bg-slate-900/60 p-6 rounded-2xl border border-slate-800 space-y-6">
                 <div class="text-center">
-                    <span class="text-xs font-bold tracking-widest uppercase bg-cyan-950/50 border border-cyan-800/30 text-cyan-400 px-3 py-1 rounded-full">頻道建立成功</span>
-                    <h3 id="displayRoomCode" class="text-6xl font-black font-mono tracking-wider text-white mt-4 drop-shadow-[0_0_15px_rgba(34,211,238,0.2)]">1111</h3>
-                    <p class="text-slate-400 text-xs mt-2">請將此房號提供給您的遊客群組</p>
+                    <span class="text-xs font-bold text-cyan-400 px-3 py-1 rounded-full bg-cyan-950/50">頻道建立成功</span>
+                    <h3 id="displayRoomCode" class="text-6xl font-black font-mono text-white mt-4">1111</h3>
                 </div>
-
-                <div class="flex items-center justify-between bg-slate-950 p-4 rounded-xl border border-slate-800/60">
-                    <div class="flex flex-col">
-                        <span class="text-sm font-bold text-slate-200">每次隨記房號</span>
-                        <span class="text-xs text-slate-500 mt-0.5">關閉則預設為 1111 房</span>
-                    </div>
-                    <label class="relative inline-flex items-center cursor-pointer select-none">
+                <div class="flex items-center justify-between bg-slate-950 p-4 rounded-xl border border-slate-800">
+                    <span class="text-sm font-bold text-slate-200">每次隨機房號</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" id="chkRandomCode" class="sr-only peer" onchange="toScreen3()">
-                        <div class="w-11 h-6 bg-slate-800 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-slate-400 Ramdon Code after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600 peer-checked:after:bg-white"></div>
+                        <div class="w-11 h-6 bg-slate-800 rounded-full peer peer-checked:bg-cyan-600 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-slate-400 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full peer-checked:after:bg-white"></div>
                     </label>
                 </div>
-
-                <button onclick="switchScreen(4); connectAsGuide();" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-cyan-950 cursor-pointer flex items-center justify-center gap-2 active:scale-98 text-base">
-                    進入無線電發話控制台 →
-                </button>
+                <button onclick="switchScreen(4); connectAsGuide();" class="w-full bg-cyan-600 text-white font-bold py-4 rounded-xl">進入無線電發話控制台 →</button>
             </div>
         </div>
 
         <div id="screen-4" class="hidden space-y-8 text-center">
-            <div class="flex items-center justify-between bg-slate-900/40 backdrop-blur-md px-5 py-3.5 rounded-2xl border border-slate-800/80">
+            <div class="flex items-center justify-between bg-slate-900/40 px-5 py-3.5 rounded-2xl border border-slate-800">
                 <div class="flex items-center gap-2.5">
                     <span id="txSignalLight" class="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
-                    <span id="txStatusText" class="text-[11px] font-bold text-slate-400 tracking-widest font-mono">INITIALIZING</span>
+                    <span id="txStatusText" class="text-[11px] font-bold text-slate-400 font-mono">INITIALIZING</span>
                 </div>
-                <div class="flex items-center gap-1 text-slate-300 font-mono text-sm bg-slate-950/80 px-3 py-1 rounded-lg border border-slate-800">
-                    <span class="text-slate-500 mr-1 text-xs font-sans">👥 聽眾:</span>
-                    <span id="displayListenerCount" class="font-bold text-cyan-400">0 <span class="text-xs font-normal text-slate-500">人</span></span>
+                <div class="text-sm font-mono text-slate-300 bg-slate-950 px-3 py-1 rounded-lg border border-slate-800">
+                    👥 聽眾: <span id="displayListenerCount" class="font-bold text-cyan-400">0</span> 人
                 </div>
             </div>
-
             <div class="flex justify-center my-10">
                 <button id="mainMicBtn" disabled
-                    onmousedown="startTransmission(event)" 
-                    onmouseup="stopTransmission(event)" 
-                    ontouchstart="startTransmission(event)" 
-                    ontouchend="stopTransmission(event)"
-                    class="w-44 h-44 bg-slate-950 text-slate-700 rounded-full flex flex-col items-center justify-center border-[12px] border-slate-900 shadow-inner border-slate-900/40 cursor-not-allowed select-none transition-all duration-75">
-                    <span id="micEmoji" class="text-4xl filter grayscale opacity-30 transition-all">🎙️</span>
-                    <span id="micBtnText" class="text-xs font-black mt-3 tracking-widest uppercase text-slate-600">等待連線</span>
+                    onmousedown="startTransmission(event)" onmouseup="stopTransmission(event)" 
+                    ontouchstart="startTransmission(event)" ontouchend="stopTransmission(event)"
+                    class="w-44 h-44 bg-slate-950 text-slate-700 rounded-full flex flex-col items-center justify-center border-[12px] border-slate-900 shadow-inner select-none transition-all duration-75">
+                    <span id="micEmoji" class="text-4xl filter grayscale opacity-30">🎙️</span>
+                    <span id="micBtnText" class="text-xs font-black mt-3 text-slate-600">等待連線</span>
                 </button>
             </div>
-
-            <p id="guideTip" class="text-sm font-medium text-slate-400 leading-relaxed max-w-xs mx-auto">
-                正在背後安全獲取 LiveKit 通行證...
-            </p>
-
-            <button onclick="leaveRoom()" class="px-6 py-2.5 bg-slate-900/80 hover:bg-red-950/40 text-slate-400 hover:text-red-400 font-bold text-xs tracking-widest uppercase rounded-xl border border-slate-800 hover:border-red-900/50 transition cursor-pointer active:scale-95">
-                切斷廣播並關閉房間
-            </button>
+            <p id="guideTip" class="text-sm text-slate-400 max-w-xs mx-auto">正在獲取通行證...</p>
+            <button onclick="leaveRoom()" class="px-6 py-2.5 bg-slate-900 text-slate-400 text-xs rounded-xl border border-slate-800">關閉房間</button>
         </div>
 
         <div id="screen-tourist-live" class="hidden space-y-8 text-center">
-            <div class="flex items-center justify-between bg-slate-900/40 backdrop-blur-md px-5 py-3.5 rounded-2xl border border-slate-800/80 font-mono text-xs text-slate-400">
+            <div class="flex items-center justify-between bg-slate-900/40 px-5 py-3.5 rounded-2xl border border-slate-800 font-mono text-xs text-slate-400">
                 <span id="liveRoomInfo" class="font-bold text-cyan-400">CH: ----</span>
                 <span id="liveNickInfo" class="text-slate-500">USER: ---</span>
             </div>
-
-            <div class="bg-slate-900/40 backdrop-blur-md p-8 rounded-2xl border border-slate-800/80 space-y-6 my-6">
+            <div class="bg-slate-900/40 p-8 rounded-2xl border border-slate-800 space-y-6 my-6">
                 <div id="liveWave" class="h-12 flex items-center justify-center gap-1.5">
-                    <span class="w-1 h-1.5 bg-slate-800 rounded-full transition-all duration-150"></span>
-                    <span class="w-1 h-1.5 bg-slate-800 rounded-full transition-all duration-150"></span>
-                    <span class="w-1 h-1.5 bg-slate-800 rounded-full transition-all duration-150"></span>
-                    <span class="w-1 h-1.5 bg-slate-800 rounded-full transition-all duration-150"></span>
-                    <span class="w-1 h-1.5 bg-slate-800 rounded-full transition-all duration-150"></span>
-                    <span class="w-1 h-1.5 bg-slate-800 rounded-full transition-all duration-150"></span>
-                    <span class="w-1 h-1.5 bg-slate-800 rounded-full transition-all duration-150"></span>
+                    <span class="w-1 h-1.5 bg-slate-800 rounded-full"></span>
+                    <span class="w-1 h-1.5 bg-slate-800 rounded-full"></span>
+                    <span class="w-1 h-1.5 bg-slate-800 rounded-full"></span>
+                    <span class="w-1 h-1.5 bg-slate-800 rounded-full"></span>
+                    <span class="w-1 h-1.5 bg-slate-800 rounded-full"></span>
                 </div>
-
                 <div class="space-y-1">
-                    <h4 id="rxStatus" class="text-base font-bold text-slate-500 tracking-wide">正在連接發證中心...</h4>
-                    <p id="rxSubStatus" class="text-xs text-slate-500">請保持網頁開啟，導遊開麥時會自動播放語音</p>
+                    <h4 id="rxStatus" class="text-base font-bold text-slate-500">正在接通頻道...</h4>
+                    <p id="rxSubStatus" class="text-xs text-slate-500">守聽中，導遊說話時會自動播放</p>
                 </div>
             </div>
-
-            <button onclick="leaveRoom()" class="px-6 py-2.5 bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-white font-bold text-xs tracking-widest uppercase rounded-xl border border-slate-800 transition cursor-pointer active:scale-95">
-                離開頻道
-            </button>
+            <button onclick="leaveRoom()" class="px-6 py-2.5 bg-slate-900 text-slate-400 text-xs rounded-xl border border-slate-800">離開頻道</button>
         </div>
-
     </main>
 
     <script src="app.js"></script>
-    <script>
-        // 網頁一載入，強制執行初始化，確保只看見畫面一
-        window.onload = function() {
-            switchScreen(1);
-        };
-    </script>
+    <script>window.onload = function(){ switchScreen(1); };</script>
 </body>
 </html>
