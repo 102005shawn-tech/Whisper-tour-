@@ -1,4 +1,4 @@
-// app.js (古典回歸安全版)
+// app.js (古典無痛嚙合完全體)
 const LIVEKIT_SERVER_URL = "wss://whisper-tour-enlho56l.livekit.cloud";
 const VERCEL_BACKEND_URL = "https://whisper-tour-drab.vercel.app/api/token";
 
@@ -40,7 +40,7 @@ async function connectAsGuide() {
 
         document.getElementById('txStatusText').innerText = "CONNECTING...";
         
-        // 🟢 直接讀取本地 livekit-client.js 注入的全局物件，絕對不可能 undefined
+        // 🟢 強制從最高層級 window 抓取晶片，不走任何隔離通道
         const LK = window.LiveKitClient || LiveKitClient;
         if (!LK) throw new Error("晶片模組加載失敗，請刷新重試！");
 
