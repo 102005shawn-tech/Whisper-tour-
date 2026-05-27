@@ -1,6 +1,4 @@
-// app.js (終極咬合無 Bug 完全體 - ES Module 雲端安全注入版)
-import * as LiveKitClient from 'https://cdn.jsdelivr.net/npm/livekit-client@2.19.0/+esm';
-
+// app.js (古典回歸安全版)
 const LIVEKIT_SERVER_URL = "wss://whisper-tour-enlho56l.livekit.cloud";
 const VERCEL_BACKEND_URL = "https://whisper-tour-drab.vercel.app/api/token";
 
@@ -42,7 +40,8 @@ async function connectAsGuide() {
 
         document.getElementById('txStatusText').innerText = "CONNECTING...";
         
-        const LK = LiveKitClient;
+        // 🟢 直接讀取本地 livekit-client.js 注入的全局物件，絕對不可能 undefined
+        const LK = window.LiveKitClient || LiveKitClient;
         if (!LK) throw new Error("晶片模組加載失敗，請刷新重試！");
 
         currentRoom = new LK.Room();
@@ -112,7 +111,7 @@ async function enterTouristChannel() {
         if (data.error) throw new Error(data.error);
 
         document.getElementById('rxStatus').innerText = "正在接入對講頻道...";
-        const LK = LiveKitClient;
+        const LK = window.LiveKitClient || LiveKitClient;
         currentRoom = new LK.Room();
         
         currentRoom.on(LK.RoomEvent.TrackSubscribed, (track) => {
@@ -168,39 +167,3 @@ function leaveRoom() {
     toggleWaveAnimation(false);
     switchScreen(1);
 }
-
-// 🛠️ 【Module 安全綁定機制】因為使用了 type="module"，按鈕點擊必須由監聽器手動綁定，徹底杜絕 not defined 假象！
-window.addEventListener('DOMContentLoaded', () => {
-    switchScreen(1);
-    
-    // 首頁按鈕
-    document.getElementById('btn-to-guide').addEventListener('click', toScreen3);
-    document.getElementById('btn-to-tourist').addEventListener('click', () => switchScreen(2));
-    
-    // 返回按鈕
-    document.getElementById('btn-back-1').addEventListener('click', () => switchScreen(1));
-    document.getElementById('btn-back-2').addEventListener('click', () => switchScreen(1));
-    
-    // 頻道隨機觸發監聽
-    document.getElementById('chkRandomCode').addEventListener('change', toScreen3);
-    
-    // 導遊發話連線
-    document.getElementById('btn-guide-go-live').addEventListener('click', () => {
-        switchScreen(4);
-        connectAsGuide();
-    });
-    
-    // 遊客連線
-    document.getElementById('btn-tourist-connect').addEventListener('click', enterTouristChannel);
-    
-    // 關閉/離開房間
-    document.getElementById('btn-close-room-1').addEventListener('click', leaveRoom);
-    document.getElementById('btn-close-room-2').addEventListener('click', leaveRoom);
-    
-    // 麥克風按住/放開發話
-    const micBtn = document.getElementById('mainMicBtn');
-    micBtn.addEventListener('mousedown', startTransmission);
-    micBtn.addEventListener('mouseup', stopTransmission);
-    micBtn.addEventListener('touchstart', startTransmission);
-    micBtn.addEventListener('touchend', stopTransmission);
-});
