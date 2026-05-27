@@ -1,4 +1,4 @@
-// app.js (古典無痛嚙合完全體)
+// app.js (古典相容 - 無痛嚙合終極版)
 const LIVEKIT_SERVER_URL = "wss://whisper-tour-enlho56l.livekit.cloud";
 const VERCEL_BACKEND_URL = "https://whisper-tour-drab.vercel.app/api/token";
 
@@ -8,22 +8,22 @@ let countInterval = null;
 let waveInterval = null;
 
 // 畫面切換控制
-function switchScreen(screenNum) {
-    document.getElementById('screen-1').className = "hidden";
-    document.getElementById('screen-2').className = "hidden";
-    document.getElementById('screen-3').className = "hidden";
-    document.getElementById('screen-4').className = "hidden";
-    document.getElementById('screen-tourist-live').className = "hidden";
+window.switchScreen = function(screenNum) {
+    document.getElementById('screen-1').style.display = "none";
+    document.getElementById('screen-2').style.display = "none";
+    document.getElementById('screen-3').style.display = "none";
+    document.getElementById('screen-4').style.display = "none";
+    document.getElementById('screen-tourist-live').style.display = "none";
 
-    if (screenNum === 1) document.getElementById('screen-1').className = "block space-y-8";
-    if (screenNum === 2) document.getElementById('screen-2').className = "block space-y-6";
-    if (screenNum === 3) document.getElementById('screen-3').className = "block space-y-6";
-    if (screenNum === 4) document.getElementById('screen-4').className = "block space-y-8 text-center";
-    if (screenNum === 'tourist-live') document.getElementById('screen-tourist-live').className = "block space-y-8 text-center";
+    if (screenNum === 1) document.getElementById('screen-1').style.display = "block";
+    if (screenNum === 2) document.getElementById('screen-2').style.display = "block";
+    if (screenNum === 3) document.getElementById('screen-3').style.display = "block";
+    if (screenNum === 4) document.getElementById('screen-4').style.display = "block";
+    if (screenNum === 'tourist-live') document.getElementById('screen-tourist-live').style.display = "block";
 }
 
 // 導遊端：房號初始化生成
-function toScreen3() {
+window.toScreen3 = function() {
     switchScreen(3);
     const chkRandom = document.getElementById('chkRandomCode').checked;
     currentRoomCode = chkRandom ? Math.floor(1000 + Math.random() * 9000).toString() : "1111"; 
@@ -31,7 +31,7 @@ function toScreen3() {
 }
 
 // 📢 導遊端：獲取 Token 並連線至基地台
-async function connectAsGuide() {
+window.connectAsGuide = async function() {
     try {
         document.getElementById('txStatusText').innerText = "FETCHING TOKEN...";
         const response = await fetch(`${VERCEL_BACKEND_URL}?room=${currentRoomCode}&identity=Guide_Leader&isGuide=true`);
@@ -40,8 +40,7 @@ async function connectAsGuide() {
 
         document.getElementById('txStatusText').innerText = "CONNECTING...";
         
-        // 🟢 強制從最高層級 window 抓取晶片，不走任何隔離通道
-        const LK = window.LiveKitClient || LiveKitClient;
+        const LK = window.LiveKitClient;
         if (!LK) throw new Error("晶片模組加載失敗，請刷新重試！");
 
         currentRoom = new LK.Room();
@@ -63,7 +62,7 @@ async function connectAsGuide() {
 }
 
 // 導遊按住麥克風發話
-async function startTransmission(e) {
+window.startTransmission = async function(e) {
     if(e) e.preventDefault();
     if (!currentRoom) return;
     const btn = document.getElementById('mainMicBtn');
@@ -78,7 +77,7 @@ async function startTransmission(e) {
 }
 
 // 導遊放開麥克風靜音
-async function stopTransmission(e) {
+window.stopTransmission = async function(e) {
     if(e) e.preventDefault();
     if (!currentRoom) return;
     const btn = document.getElementById('mainMicBtn');
@@ -93,7 +92,7 @@ async function stopTransmission(e) {
 }
 
 // 🎧 遊客端：登入並守聽頻道
-async function enterTouristChannel() {
+window.enterTouristChannel = async function() {
     let code = document.getElementById('inputRoomCode').value.trim();
     let nick = document.getElementById('inputNickname').value.trim();
 
@@ -111,7 +110,7 @@ async function enterTouristChannel() {
         if (data.error) throw new Error(data.error);
 
         document.getElementById('rxStatus').innerText = "正在接入對講頻道...";
-        const LK = window.LiveKitClient || LiveKitClient;
+        const LK = window.LiveKitClient;
         currentRoom = new LK.Room();
         
         currentRoom.on(LK.RoomEvent.TrackSubscribed, (track) => {
@@ -137,7 +136,6 @@ async function enterTouristChannel() {
     }
 }
 
-// 監聽在線聽眾人數
 function startListenerCountLoop() {
     countInterval = setInterval(() => {
         if (currentRoom) {
@@ -147,7 +145,6 @@ function startListenerCountLoop() {
     }, 2000);
 }
 
-// 聲波跳動視覺效果
 function toggleWaveAnimation(run) {
     const spans = document.querySelectorAll('#liveWave span');
     clearInterval(waveInterval);
@@ -160,8 +157,7 @@ function toggleWaveAnimation(run) {
     }
 }
 
-// 斷開連線離開房間
-function leaveRoom() {
+window.leaveRoom = function() {
     if (currentRoom) { currentRoom.disconnect(); currentRoom = null; }
     clearInterval(countInterval);
     toggleWaveAnimation(false);
