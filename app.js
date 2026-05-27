@@ -1,7 +1,5 @@
-// app.js (OpenAI 骨架 + 跨域與環境變數終極修復)
+// app.js (OpenAI 骨架 + 手機觸控防禦完全體)
 const LIVEKIT_SERVER_URL = "wss://whisper-tour-enlho56l.livekit.cloud";
-
-// 🟢 修正一：強迫切回 Production 正式版網址，拒絕 Vercel 自動生成的 Preview 亂碼網址，彻底解決 CORS 阻擋！
 const VERCEL_BACKEND_URL = "https://whisper-tour-drab.vercel.app/api/token";
 
 let currentRoom = null;
@@ -9,27 +7,22 @@ let currentRoomCode = "";
 
 /* 畫面切換 */
 function switchScreen(screenNum) {
-  // 🟢 修正二：保險除錯，確保畫面 4 與 5 也能被正確隱藏與切換
-  const screens = ["screen-1", "screen-2", "screen-3", "screen-4", "screen-tourist-live"];
-  screens.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.add("hidden");
-  });
+  document.getElementById("screen-1").classList.add("hidden");
+  document.getElementById("screen-2").classList.add("hidden");
+  document.getElementById("screen-3").classList.add("hidden");
 
-  const targetScreen = screenNum === 'tourist-live' ? "screen-tourist-live" : `screen-${screenNum}`;
-  const targetEl = document.getElementById(targetScreen);
-  if (targetEl) targetEl.classList.remove("hidden");
+  document.getElementById(`screen-${screenNum}`).classList.remove("hidden");
 }
 
 /* 導遊畫面 */
-window.toGuideScreen = function() {
+function toGuideScreen() {
   switchScreen(3);
   currentRoomCode = Math.floor(1000 + Math.random() * 9000).toString();
   document.getElementById("displayRoomCode").innerText = currentRoomCode;
 }
 
 /* 導遊連線 */
-window.connectAsGuide = async function() {
+async function connectAsGuide() {
   try {
     document.getElementById("txStatusText").innerText = "取得 Token 中...";
 
@@ -43,8 +36,6 @@ window.connectAsGuide = async function() {
       throw new Error(data.error);
     }
 
-    document.getElementById("txStatusText").innerText = "連線基地台中...";
-
     const LK = window.LivekitClient || window.LiveKitClient;
 
     if (!LK) {
@@ -53,13 +44,14 @@ window.connectAsGuide = async function() {
 
     currentRoom = new LK.Room();
 
-    await currentRoom.connect(
-      LIVEKIT_SERVER_URL,
-      data.token
-    );
+    await currentRoom.connect(LIVEKIT_SERVER_URL, data.token);
 
     document.getElementById("txStatusText").innerText = "已連線 (待機中)";
     document.getElementById("mainMicBtn").disabled = false;
+    
+    // 連線成功後，把按鈕背景稍微亮一下，提醒導遊可以按了
+    document.getElementById("mainMicBtn").classList.remove("bg-gray-800");
+    document.getElementById("mainMicBtn").classList.add("bg-gray-700", "text-cyan-400");
 
   } catch (err) {
     console.error(err);
@@ -67,30 +59,49 @@ window.connectAsGuide = async function() {
   }
 }
 
-/* 開始說話 */
-window.startTransmission = async function() {
+/* 開始說話 (完美對齊電腦滑鼠與手機手指事件) */
+async function startTransmission(e) {
+  // 🟢 核心防禦：如果是手機觸控，強行阻止手機彈出複製選單，逼麥克風清醒！
+  if (e && e.preventDefault) {
+    e.preventDefault();
+  }
+  
   if (!currentRoom) return;
+
   try {
     await currentRoom.localParticipant.setMicrophoneEnabled(true);
     document.getElementById("txStatusText").innerText = "正在說話...";
+    
+    // 🎨 發話視覺反饋：按鈕變紅
+    const btn = document.getElementById("mainMicBtn");
+    btn.style.backgroundColor = "#ef4444";
   } catch (err) {
     console.error(err);
   }
 }
 
 /* 停止說話 */
-window.stopTransmission = async function() {
+async function stopTransmission(e) {
+  if (e && e.preventDefault) {
+    e.preventDefault();
+  }
+  
   if (!currentRoom) return;
+
   try {
     await currentRoom.localParticipant.setMicrophoneEnabled(false);
     document.getElementById("txStatusText").innerText = "待機中";
+    
+    // 🎨 恢復灰色
+    const btn = document.getElementById("mainMicBtn");
+    btn.style.backgroundColor = "#374151"; // Tailwind bg-gray-700
   } catch (err) {
     console.error(err);
   }
 }
 
 /* 遊客加入 */
-window.enterTouristChannel = async function() {
+async function enterTouristChannel() {
   try {
     const roomCode = document.getElementById("inputRoomCode").value;
     const nickname = document.getElementById("inputNickname").value || "遊客";
@@ -107,22 +118,15 @@ window.enterTouristChannel = async function() {
 
     currentRoom = new LK.Room();
 
-    currentRoom.on(
-      LK.RoomEvent.TrackSubscribed,
-      (track) => {
-        if (track.kind === "audio") {
-          track.attach();
-          document.getElementById("rxStatus").innerText = "正在收聽導遊";
-        }
+    currentRoom.on(LK.RoomEvent.TrackSubscribed, (track) => {
+      if (track.kind === "audio") {
+        track.attach();
+        document.getElementById("rxStatus").innerText = "正在收聽導遊";
       }
-    );
+    });
 
-    await currentRoom.connect(
-      LIVEKIT_SERVER_URL,
-      data.token
-    );
-
-    document.getElementById("rxStatus").innerText = "已加入頻道";
+    await currentRoom.connect(LIVEKIT_SERVER_URL, data.token);
+    document.getElementById("rxStatus").innerText = "已加入頻道 (聽眾常駐)";
 
   } catch (err) {
     console.error(err);
@@ -130,5 +134,10 @@ window.enterTouristChannel = async function() {
   }
 }
 
-// 🟢 修正三：保險機制，將函數掛載到 window 上，確保傳統 HTML 的 onclick 絕對抓得到
+// 🟢 最終防線：把所有函數強制註冊到最高級 window，保證 HTML 的 onclick/ontouch 100% 抓得到
+window.toGuideScreen = toGuideScreen;
 window.switchScreen = switchScreen;
+window.connectAsGuide = connectAsGuide;
+window.startTransmission = startTransmission;
+window.stopTransmission = stopTransmission;
+window.enterTouristChannel = enterTouristChannel;
