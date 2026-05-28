@@ -53,7 +53,9 @@ window.connectAsGuide = async function() {
 
     document.getElementById("txStatusText").innerText = "CONNECTING...";
 
-    const LK = window.LivekitClient || window.LiveKitClient;
+        // 🟢 終極包抄：把官方 UMD 腳本在手機上可能生成的所有大小寫變數全部抓出來對齊！
+    const LK = window.LiveKitClient || window.LivekitClient || LiveKitClient || window.LivekitClientUMD;
+
 
     if (!LK) {
       throw new Error("LiveKit SDK 載入失敗，請刷新重試");
@@ -146,8 +148,9 @@ window.enterTouristChannel = async function() {
     const data = await response.json();
     
     document.getElementById("rxStatus").innerText = "正在接入對講頻道...";
-    const LK = window.LivekitClient || window.LiveKitClient;
-
+    
+    // 🟢 終極包抄：把官方 UMD 腳本在手機上可能生成的所有大小寫變數全部抓出來對齊！
+    const LK = window.LiveKitClient || window.LivekitClient || LiveKitClient || window.LivekitClientUMD;
     currentRoom = new LK.Room();
 
     currentRoom.on(LK.RoomEvent.TrackSubscribed, (track) => {
