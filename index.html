@@ -6,7 +6,6 @@
     <title>Whisper Tour - 網頁無線電導覽系統</title>
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/livekit-client@2.19.0/dist/livekit-client.umd.min.js" crossorigin="anonymous"></script>
-
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-[#030712] min-h-screen flex flex-col md:flex-row items-center justify-center font-sans antialiased selection:bg-cyan-500/30 overflow-x-hidden relative">
@@ -89,11 +88,8 @@
                     <button
                         id="mainMicBtn"
                         disabled
-                        onmousedown="startTransmission(event)"
-                        onmouseup="stopTransmission(event)"
-                        ontouchstart="startTransmission(event)"
-                        ontouchend="stopTransmission(event)"
-                        class="w-48 h-48 bg-slate-950 text-slate-700 rounded-full flex flex-col items-center justify-center border-[12px] border-slate-900 shadow-inner select-none transition-all duration-200 cursor-not-allowed opacity-40"
+                        class="w-48 h-48 bg-slate-950 text-slate-700 rounded-full flex flex-col items-center justify-center border-[12px] border-slate-900 shadow-inner select-none transition-all duration-200 cursor-not-allowed opacity-40 touch-none"
+                        style="-webkit-user-select: none; -webkit-touch-callout: none;"
                     >
                         <span id="micEmoji" class="text-5xl filter grayscale opacity-30 transition-all duration-200">🎙️</span>
                         <span id="micBtnText" class="text-xs font-black mt-3 text-slate-500 tracking-wider">等待連線</span>
