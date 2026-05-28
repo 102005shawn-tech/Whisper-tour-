@@ -1,4 +1,4 @@
-// app.js (經典外觀復刻 + 手機觸控防護防禦完全體)
+// app.js (終極外觀復刻 + 物理強制監聽完全體)
 const LIVEKIT_SERVER_URL = "wss://whisper-tour-enlho56l.livekit.cloud";
 const VERCEL_BACKEND_URL = "https://whisper-tour-drab.vercel.app/api/token";
 
@@ -53,9 +53,7 @@ window.connectAsGuide = async function() {
 
     document.getElementById("txStatusText").innerText = "CONNECTING...";
 
-        // 🟢 終極包抄：把官方 UMD 腳本在手機上可能生成的所有大小寫變數全部抓出來對齊！
-    const LK = window.LiveKitClient || window.LivekitClient || LiveKitClient || window.LivekitClientUMD;
-
+    const LK = window.LiveKitClient || window.LivekitClient || LiveKitClient;
 
     if (!LK) {
       throw new Error("LiveKit SDK 載入失敗，請刷新重試");
@@ -81,6 +79,12 @@ window.connectAsGuide = async function() {
     document.getElementById("micBtnText").className = "text-xs font-black mt-3 text-cyan-400 tracking-wider";
     document.getElementById("guideTip").innerHTML = "基地台連線成功！<br><span class='text-emerald-400 font-bold'>現在可以長按🎙️對講了！</span>";
 
+    // 🔌 【核心暴力焊槍】在連線成功、按鈕啟用的這一瞬間，直接用最強硬的底層事件綁定，強行接通手機神經元！
+    btn.onmousedown = startTransmission;
+    btn.onmouseup = stopTransmission;
+    btn.ontouchstart = startTransmission;
+    btn.ontouchend = stopTransmission;
+
   } catch (err) {
     console.error(err);
     document.getElementById("txStatusText").innerText = "連線失敗";
@@ -89,9 +93,12 @@ window.connectAsGuide = async function() {
   }
 }
 
-/* 🔴 開始說話 (完美相容觸控事件，阻止系統長按選單) */
-window.startTransmission = async function(e) {
-  if (e && e.preventDefault) e.preventDefault();
+/* 🔴 開始說話 (強制攔截所有干擾) */
+async function startTransmission(e) {
+  if (e) {
+    if (e.preventDefault) e.preventDefault();
+    if (e.stopPropagation) e.stopPropagation();
+  }
   if (!currentRoom) return;
 
   try {
@@ -99,10 +106,9 @@ window.startTransmission = async function(e) {
     document.getElementById("txStatusText").innerText = "TRANSMIT (TX)";
     document.getElementById("txSignalLight").className = "w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_12px_#ef4444]";
     
-    // 按鈕發光反饋
     const btn = document.getElementById("mainMicBtn");
-    btn.style.backgroundColor = "#7f1d1d"; // 暗紅
-    btn.style.borderColor = "#ef4444";     // 鮮紅發光
+    btn.style.backgroundColor = "#7f1d1d"; 
+    btn.style.borderColor = "#ef4444";     
     document.getElementById("micBtnText").innerText = "正在發話";
     document.getElementById("micBtnText").className = "text-xs font-black mt-3 text-red-400 tracking-wider";
   } catch (err) {
@@ -111,8 +117,11 @@ window.startTransmission = async function(e) {
 }
 
 /* 🟢 停止說話 */
-window.stopTransmission = async function(e) {
-  if (e && e.preventDefault) e.preventDefault();
+async function stopTransmission(e) {
+  if (e) {
+    if (e.preventDefault) e.preventDefault();
+    if (e.stopPropagation) e.stopPropagation();
+  }
   if (!currentRoom) return;
 
   try {
@@ -120,7 +129,6 @@ window.stopTransmission = async function(e) {
     document.getElementById("txStatusText").innerText = "STANDBY (守聽)";
     document.getElementById("txSignalLight").className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]";
     
-    // 恢復待機樣式
     const btn = document.getElementById("mainMicBtn");
     btn.style.backgroundColor = "#090d16";
     btn.style.borderColor = "#1e293b";
@@ -148,9 +156,8 @@ window.enterTouristChannel = async function() {
     const data = await response.json();
     
     document.getElementById("rxStatus").innerText = "正在接入對講頻道...";
-    
-    // 🟢 終極包抄：把官方 UMD 腳本在手機上可能生成的所有大小寫變數全部抓出來對齊！
-    const LK = window.LiveKitClient || window.LivekitClient || LiveKitClient || window.LivekitClientUMD;
+    const LK = window.LiveKitClient || window.LivekitClient || LiveKitClient;
+
     currentRoom = new LK.Room();
 
     currentRoom.on(LK.RoomEvent.TrackSubscribed, (track) => {
