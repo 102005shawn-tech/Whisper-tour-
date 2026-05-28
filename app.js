@@ -1,9 +1,11 @@
-// app.js (終極外觀復刻 + 物理強制監聽完全體)
+// app.js (炫泡經典外殼 + 即時音量聲波分析 + 物理強綁定完全體)
 const LIVEKIT_SERVER_URL = "wss://whisper-tour-enlho56l.livekit.cloud";
 const VERCEL_BACKEND_URL = "https://whisper-tour-drab.vercel.app/api/token";
 
 let currentRoom = null;
 let currentRoomCode = "";
+let audioAnalyser = null; // 聲音頻率分析器
+let animationId = null;   // 聲波時鐘針
 
 /* 畫面切換控制 */
 window.switchScreen = function(screenNum) {
@@ -53,6 +55,7 @@ window.connectAsGuide = async function() {
 
     document.getElementById("txStatusText").innerText = "CONNECTING...";
 
+    // 🟢 終極全網域 SDK 物件包抄
     const LK = window.LiveKitClient || window.LivekitClient || LiveKitClient;
 
     if (!LK) {
@@ -63,7 +66,7 @@ window.connectAsGuide = async function() {
 
     await currentRoom.connect(LIVEKIT_SERVER_URL, data.token);
 
-    // 🟢 連線成功：解鎖高級按鈕樣式
+    // 連線成功：點亮控制面板
     document.getElementById("txStatusText").innerText = "STANDBY (守聽)";
     document.getElementById("txSignalLight").className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]";
     
@@ -79,7 +82,7 @@ window.connectAsGuide = async function() {
     document.getElementById("micBtnText").className = "text-xs font-black mt-3 text-cyan-400 tracking-wider";
     document.getElementById("guideTip").innerHTML = "基地台連線成功！<br><span class='text-emerald-400 font-bold'>現在可以長按🎙️對講了！</span>";
 
-    // 🔌 【核心暴力焊槍】在連線成功、按鈕啟用的這一瞬間，直接用最強硬的底層事件綁定，強行接通手機神經元！
+    // 🔌 【底層物理焊槍】啟用網頁實體驅動，避開行動端瀏覽器的隱形阻擋
     btn.onmousedown = startTransmission;
     btn.onmouseup = stopTransmission;
     btn.ontouchstart = startTransmission;
@@ -93,7 +96,7 @@ window.connectAsGuide = async function() {
   }
 }
 
-/* 🔴 開始說話 (強制攔截所有干擾) */
+/* 🔴 開始發話（含即時聲波捕捉分析） */
 async function startTransmission(e) {
   if (e) {
     if (e.preventDefault) e.preventDefault();
@@ -102,6 +105,7 @@ async function startTransmission(e) {
   if (!currentRoom) return;
 
   try {
+    // 1. 驅動 LiveKit 硬體開麥
     await currentRoom.localParticipant.setMicrophoneEnabled(true);
     document.getElementById("txStatusText").innerText = "TRANSMIT (TX)";
     document.getElementById("txSignalLight").className = "w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_12px_#ef4444]";
@@ -111,12 +115,59 @@ async function startTransmission(e) {
     btn.style.borderColor = "#ef4444";     
     document.getElementById("micBtnText").innerText = "正在發話";
     document.getElementById("micBtnText").className = "text-xs font-black mt-3 text-red-400 tracking-wider";
+
+    // 2. 🎛️ 音波分析大腦連線
+    const LK = window.LiveKitClient || window.LivekitClient || LiveKitClient;
+    const localAudioTrack = currentRoom.localParticipant.getTrackPublication(LK.Track.Source.Microphone || "microphone");
+    
+    if (localAudioTrack && localAudioTrack.track) {
+      const mediaStream = localAudioTrack.track.mediaStream;
+      if (mediaStream) {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const source = audioContext.createMediaStreamSource(mediaStream);
+        audioAnalyser = audioContext.createAnalyser();
+        audioAnalyser.fftSize = 32; 
+        source.connect(audioAnalyser);
+
+        const dataArray = new Uint8Array(audioAnalyser.frequencyBinCount);
+        
+        // 3. 🎨 聲波擴散循環動畫
+        function animateWave() {
+          if (!audioAnalyser) return;
+          audioAnalyser.getByteFrequencyData(dataArray);
+          
+          let sum = 0;
+          for (let i = 0; i < dataArray.length; i++) {
+            sum += dataArray[i];
+          }
+          const vol = sum / dataArray.length; // 即時音量數值 (0 - 255)
+
+          // 將聲音強度映射到草圖外圈的擴散範圍 (1.0 到 1.55 倍)
+          const scale = 1.0 + (vol / 255) * 0.55;
+          const opacity = vol > 8 ? 0.2 + (vol / 255) * 0.8 : 0;
+
+          const ringInner = document.getElementById("micWaveRing");
+          const ringOuter = document.getElementById("micWaveRingOuter");
+          
+          if (ringInner && ringOuter) {
+            ringInner.style.transform = `scale(${scale})`;
+            ringInner.style.opacity = opacity;
+            
+            ringOuter.style.transform = `scale(${scale * 1.25})`;
+            ringOuter.style.opacity = opacity * 0.4;
+          }
+
+          animationId = requestAnimationFrame(animateWave);
+        }
+        animateWave();
+      }
+    }
   } catch (err) {
     console.error(err);
   }
 }
 
-/* 🟢 停止說話 */
+/* 🟢 停止發話（縮回聲波場） */
 async function stopTransmission(e) {
   if (e) {
     if (e.preventDefault) e.preventDefault();
@@ -125,6 +176,7 @@ async function stopTransmission(e) {
   if (!currentRoom) return;
 
   try {
+    // 1. 關閉麥克風
     await currentRoom.localParticipant.setMicrophoneEnabled(false);
     document.getElementById("txStatusText").innerText = "STANDBY (守聽)";
     document.getElementById("txSignalLight").className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]";
@@ -134,6 +186,22 @@ async function stopTransmission(e) {
     btn.style.borderColor = "#1e293b";
     document.getElementById("micBtnText").innerText = "按住說話";
     document.getElementById("micBtnText").className = "text-xs font-black mt-3 text-cyan-400 tracking-wider";
+
+    // 2. 🔌 關閉音訊監聽，重設擴散光暈
+    if (animationId) {
+      cancelAnimationFrame(animationId);
+      animationId = null;
+    }
+    audioAnalyser = null;
+
+    const ringInner = document.getElementById("micWaveRing");
+    const ringOuter = document.getElementById("micWaveRingOuter");
+    if (ringInner && ringOuter) {
+      ringInner.style.transform = "scale(1)";
+      ringInner.style.opacity = "0";
+      ringOuter.style.transform = "scale(1)";
+      ringOuter.style.opacity = "0";
+    }
   } catch (err) {
     console.error(err);
   }
